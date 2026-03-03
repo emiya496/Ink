@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(python -c:*)",
+      "Bash(java:*)",
+      "Bash(mvn:*)",
+      "Bash(npm create:*)",
+      "Bash(npm install:*)",
+      "Bash(npm view:*)",
+      "Bash(/e/毕设/InkForge/inkforge-frontend/src/main.ts:*)",
+      "Bash(/e/毕设/InkForge/inkforge-frontend/src/App.vue:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run build:*)",
+      "Bash(node -e:*)",
+      "Bash(mysql:*)"
+    ]
+  }
+}
