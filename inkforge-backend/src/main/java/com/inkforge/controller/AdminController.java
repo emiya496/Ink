@@ -45,8 +45,9 @@ public class AdminController {
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam(required = false) String type,
-            @RequestParam(required = false) String status) {
-        return Result.success(adminService.listContents(page, size, type, status));
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String keyword) {
+        return Result.success(adminService.listContents(page, size, type, status, keyword));
     }
 
     @PutMapping("/contents/{id}/status")
@@ -65,8 +66,9 @@ public class AdminController {
     @GetMapping("/tags")
     public Result<PageResult<Tag>> listTags(
             @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "20") Integer size) {
-        return Result.success(adminService.listTags(page, size));
+            @RequestParam(defaultValue = "20") Integer size,
+            @RequestParam(required = false) String keyword) {
+        return Result.success(adminService.listTags(page, size, keyword));
     }
 
     @PostMapping("/tags")
@@ -91,8 +93,9 @@ public class AdminController {
     @GetMapping("/comments")
     public Result<PageResult<Comment>> listComments(
             @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "20") Integer size) {
-        return Result.success(adminService.listComments(page, size));
+            @RequestParam(defaultValue = "20") Integer size,
+            @RequestParam(required = false) String keyword) {
+        return Result.success(adminService.listComments(page, size, keyword));
     }
 
     @DeleteMapping("/comments/{id}")

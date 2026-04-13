@@ -25,4 +25,7 @@ public class ContentCreateRequest {
 
     // true=保存草稿, false/null=正常发布
     private Boolean isDraft = false;
+
+    // 可见性：public=公开 | private=私密 | followers_only=仅粉丝可见
+    private String visibility = "public";
 }

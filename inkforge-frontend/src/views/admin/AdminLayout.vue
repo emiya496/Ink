@@ -72,45 +72,76 @@ const pageTitle = computed(() => titleMap[route.path] || '管理后台')
 <style scoped>
 .admin-layout { height: 100vh; }
 .admin-aside {
-  background: #001529;
+  background: linear-gradient(180deg, #0f1f3d 0%, #001529 100%);
   display: flex;
   flex-direction: column;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
 }
 .admin-logo {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 16px;
-  border-bottom: 1px solid #ffffff20;
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 .admin-logo-img {
   width: 140px;
   height: auto;
+  filter: brightness(1.1);
 }
 .admin-logo-text {
-  color: #ffffff80;
-  font-size: 12px;
-  margin-top: 4px;
-  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 11px;
+  margin-top: 6px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
 }
-.admin-menu { border-right: none; flex: 1; }
+.admin-menu { border-right: none; flex: 1; background: transparent !important; }
+:deep(.admin-menu .el-menu-item) {
+  margin: 2px 8px;
+  border-radius: 8px;
+  transition: background 0.2s !important;
+}
+:deep(.admin-menu .el-menu-item.is-active) {
+  background: rgba(64, 158, 255, 0.2) !important;
+}
 .admin-back {
-  color: #ffffff60;
+  color: rgba(255, 255, 255, 0.4);
   font-size: 13px;
-  padding: 16px;
+  padding: 14px 16px;
   cursor: pointer;
-  border-top: 1px solid #ffffff20;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  transition: color 0.2s, background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
-.admin-back:hover { color: #fff; }
+.admin-back:hover { color: #fff; background: rgba(255,255,255,0.06); }
 .admin-header {
   background: #fff;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.05);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
 }
-.admin-title { font-size: 18px; font-weight: 600; color: #333; }
-.admin-user { display: flex; align-items: center; gap: 10px; }
-.admin-main { background: #f5f7fa; padding: 24px; }
+.admin-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-title::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 18px;
+  background: #409eff;
+  border-radius: 2px;
+}
+.admin-user { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #555; }
+.admin-main { background: #f0f2f5; padding: 24px; overflow: auto; }
 </style>

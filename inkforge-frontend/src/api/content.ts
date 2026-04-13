@@ -13,6 +13,10 @@ export const contentApi = {
     request.get<any, any>('/content/rank', { params }),
   hotBanner: (params: { type?: string }) =>
     request.get<any, any>('/content/hot-banner', { params }),
+  getUserWorks: (userId: number, page = 1, size = 20) =>
+    request.get<any, any>(`/content/user/${userId}`, { params: { page, size } }),
+  myLikes: (page = 1, size = 20) =>
+    request.get<any, any>('/content/my/likes', { params: { page, size } }),
 }
 
 export const chapterApi = {

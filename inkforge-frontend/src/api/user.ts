@@ -17,5 +17,9 @@ export const userApi = {
   changePassword: (data: { oldPassword: string; newPassword: string }) => request.put('/user/password', data),
   sendDeleteCode: () => request.post('/user/account/send-delete-code'),
   deleteAccount: (data: { password: string; code: string }) => request.delete('/user/account', { data }),
+  searchUsers: (keyword: string, page = 1, size = 20) =>
+    request.get<any, any>('/user/search', { params: { keyword, page, size } }),
+  getProfile: (userId: number) => request.get<any, any>(`/user/${userId}/profile`),
+  updateBio: (bio: string) => request.put('/user/bio', { bio }),
 }
 

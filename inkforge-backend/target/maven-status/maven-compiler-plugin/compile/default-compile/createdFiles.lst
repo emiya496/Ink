@@ -1,4 +1,6 @@
 com\inkforge\common\PageResult.class
+com\inkforge\entity\UserFollow.class
+com\inkforge\dto\response\FavoritePageResult.class
 com\inkforge\mapper\EmailCodeMapper.class
 com\inkforge\service\ChapterService.class
 com\inkforge\mapper\ContentTagMapper.class
@@ -21,6 +23,7 @@ com\inkforge\config\MybatisPlusConfig.class
 com\inkforge\service\ai\AIProviderFactory.class
 com\inkforge\util\JwtUtil.class
 com\inkforge\entity\ContentTag.class
+com\inkforge\mapper\UserFollowMapper.class
 com\inkforge\mapper\ContentViewLogMapper.class
 com\inkforge\service\ai\impl\ClaudeProvider.class
 com\inkforge\common\exception\BusinessException.class
@@ -37,6 +40,7 @@ com\inkforge\service\CommentService.class
 com\inkforge\mapper\ChapterMapper.class
 com\inkforge\controller\UploadController.class
 com\inkforge\mapper\FavoriteMapper.class
+com\inkforge\dto\response\UserProfileVO.class
 com\inkforge\controller\ChapterController.class
 com\inkforge\entity\UserLike.class
 com\inkforge\InkForgeApplication.class
@@ -48,6 +52,7 @@ com\inkforge\service\AdminService.class
 com\inkforge\config\JwtAuthFilter.class
 com\inkforge\dto\response\ContentVO.class
 com\inkforge\controller\AdminController.class
+com\inkforge\controller\FollowController.class
 com\inkforge\entity\User.class
 com\inkforge\common\exception\GlobalExceptionHandler.class
 com\inkforge\entity\Content.class
@@ -55,6 +60,7 @@ com\inkforge\entity\Chapter.class
 com\inkforge\controller\CommentController.class
 com\inkforge\mapper\UserMapper.class
 com\inkforge\config\WebMvcConfig.class
+com\inkforge\service\FollowService.class
 com\inkforge\dto\request\AiRequest.class
 com\inkforge\mapper\ContentMapper.class
 com\inkforge\service\ai\impl\OpenAIProvider.class

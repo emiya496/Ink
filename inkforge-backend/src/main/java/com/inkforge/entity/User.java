@@ -20,5 +20,6 @@ public class User {
     private String email;
     private String role;
     private String status;
+    private String bio;
     private LocalDateTime createTime;
 }

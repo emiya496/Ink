@@ -13,11 +13,39 @@
             {{ userInfo?.role === 'admin' ? '管理员' : '普通用户' }}
           </el-tag>
           <p class="join-date">注册时间：{{ formatDate(userInfo?.createTime) }}</p>
+          <div class="profile-stats" v-if="profileStats">
+            <span class="stat-chip" @click="activeTab = 'followers'"><strong>{{ profileStats.followersCount }}</strong> 粉丝</span>
+            <span class="stat-chip" @click="activeTab = 'following'"><strong>{{ profileStats.followingCount }}</strong> 关注</span>
+            <span class="stat-chip"><strong>{{ profileStats.worksCount }}</strong> 作品</span>
+          </div>
+        </div>
+
+        <!-- 个人简介 -->
+        <div class="edit-section">
+          <p class="section-label">个人简介：</p>
+          <el-input
+            v-model="newBio"
+            type="textarea"
+            :rows="3"
+            :placeholder="userInfo?.bio || '介绍一下自己吧...'"
+            maxlength="200"
+            show-word-limit
+          />
+          <el-button
+            type="primary"
+            size="small"
+            :loading="updatingBio"
+            @click="doUpdateBio"
+            style="margin-top:8px;width:100%"
+          >
+            保存简介
+          </el-button>
         </div>
 
         <!-- 修改头像 -->
         <div class="edit-avatar">
-          <p style="font-size:13px;color:#999;margin-bottom:8px">更新头像：</p>
+          <p style="font-size:13px;color:#999;margin-bottom:4px">更新头像：</p>
+          <p style="font-size:12px;color:#bbb;margin-bottom:8px">图片大小不超过 10 MB</p>
           <!-- 本地文件上传 -->
           <div class="upload-btn-wrap">
             <el-button size="small" style="width:100%" @click="triggerAvatarFile">
@@ -114,9 +142,9 @@
                 </el-empty>
               </div>
               <div v-else class="work-list">
-                <div v-for="item in myContent" :key="item.id" class="work-item">
+                <div v-for="item in myContent" :key="item.id" class="work-item" style="cursor:pointer" @click="router.push(`/detail/${item.id}`)">
                   <div class="work-cover" v-if="item.coverImage">
-                    <img :src="item.coverImage" alt="封面" />
+                    <img :src="item.coverImage.split(',')[0].trim()" alt="封面" />
                   </div>
                   <div class="work-info">
                     <span class="work-title" @click="router.push(`/detail/${item.id}`)">{{ item.title }}</span>
@@ -131,9 +159,9 @@
                     </div>
                   </div>
                   <div class="work-actions">
-                    <el-button size="small" plain @click="router.push(`/detail/${item.id}`)">查看</el-button>
-                    <el-button size="small" type="primary" plain @click="router.push(`/publish/${item.id}`)">编辑</el-button>
-                    <el-button size="small" type="danger" plain @click="deleteContent(item.id)">删除</el-button>
+                    <el-button size="small" plain @click.stop="router.push(`/detail/${item.id}`)">查看</el-button>
+                    <el-button size="small" type="primary" plain @click.stop="router.push(`/publish/${item.id}`)">编辑</el-button>
+                    <el-button size="small" type="danger" plain @click.stop="deleteContent(item.id)">删除</el-button>
                   </div>
                 </div>
               </div>
@@ -159,9 +187,9 @@
                 </el-empty>
               </div>
               <div v-else class="work-list">
-                <div v-for="item in myDrafts" :key="item.id" class="work-item">
+                <div v-for="item in myDrafts" :key="item.id" class="work-item" style="cursor:pointer" @click="router.push(`/publish/${item.id}`)">
                   <div class="work-cover" v-if="item.coverImage">
-                    <img :src="item.coverImage" alt="封面" />
+                    <img :src="item.coverImage.split(',')[0].trim()" alt="封面" />
                   </div>
                   <div class="work-info">
                     <span class="work-title">{{ item.title || '（无标题）' }}</span>
@@ -172,10 +200,10 @@
                     </div>
                   </div>
                   <div class="work-actions">
-                    <el-button size="small" type="primary" plain @click="router.push(`/publish/${item.id}`)">
+                    <el-button size="small" type="primary" plain @click.stop="router.push(`/publish/${item.id}`)">
                       继续编辑
                     </el-button>
-                    <el-button size="small" type="danger" plain @click="deleteDraft(item.id)">
+                    <el-button size="small" type="danger" plain @click.stop="deleteDraft(item.id)">
                       删除
                     </el-button>
                   </div>
@@ -188,6 +216,109 @@
                   :total="draftsTotal"
                   layout="prev, pager, next"
                   @current-change="loadMyDrafts"
+                />
+              </div>
+            </div>
+          </el-tab-pane>
+
+          <!-- 我的点赞 -->
+          <el-tab-pane label="我的点赞" name="likes">
+            <el-skeleton :rows="4" animated v-if="likesLoading" />
+            <div v-else>
+              <div v-if="myLikes.length === 0">
+                <el-empty description="还没有点赞任何作品" />
+              </div>
+              <div v-else class="work-list">
+                <div v-for="item in myLikes" :key="item.id" class="work-item" style="cursor:pointer" @click="router.push(`/detail/${item.id}`)">
+                  <div class="work-cover" v-if="item.coverImage">
+                    <img :src="item.coverImage.split(',')[0].trim()" alt="封面" />
+                  </div>
+                  <div class="work-info">
+                    <span class="work-title">{{ item.title }}</span>
+                    <div class="work-meta">
+                      <el-tag size="small" type="info">{{ item.type }}</el-tag>
+                      <span class="work-time">{{ formatDate(item.createTime) }}</span>
+                      <span class="work-stat">阅读 {{ item.viewCount }}</span>
+                      <span class="work-stat">点赞 {{ item.likeCount }}</span>
+                    </div>
+                  </div>
+                  <div class="work-actions">
+                    <el-button size="small" plain @click.stop="router.push(`/detail/${item.id}`)">查看</el-button>
+                    <el-button size="small" type="warning" plain @click.stop="cancelLike(item.id)">取消点赞</el-button>
+                  </div>
+                </div>
+              </div>
+              <div class="pagination-wrap">
+                <el-pagination
+                  v-model:current-page="likesPage"
+                  :page-size="20"
+                  :total="likesTotal"
+                  layout="prev, pager, next"
+                  @current-change="loadMyLikes"
+                />
+              </div>
+            </div>
+          </el-tab-pane>
+
+          <!-- 我的关注 -->
+          <el-tab-pane label="我的关注" name="following">
+            <el-skeleton :rows="4" animated v-if="followingLoading" />
+            <div v-else>
+              <div v-if="myFollowing.length === 0">
+                <el-empty description="还没有关注任何用户" />
+              </div>
+              <div v-else class="user-list">
+                <div v-for="user in myFollowing" :key="user.id" class="user-item">
+                  <el-avatar :src="user.avatar" :size="48" style="cursor:pointer;flex-shrink:0" @click="router.push(`/user/${user.id}`)">
+                    {{ user.username?.charAt(0)?.toUpperCase() }}
+                  </el-avatar>
+                  <div class="user-item-info" @click="router.push(`/user/${user.id}`)">
+                    <span class="user-item-name">{{ user.username }}</span>
+                    <span class="user-item-bio">{{ user.bio || '这个人很懒，什么都没写~' }}</span>
+                    <span class="user-item-stat">粉丝 {{ user.followersCount }}</span>
+                  </div>
+                  <el-button size="small" plain @click="doUnfollow(user.id)">取消关注</el-button>
+                </div>
+              </div>
+              <div class="pagination-wrap">
+                <el-pagination
+                  v-model:current-page="followingPage"
+                  :page-size="20"
+                  :total="followingTotal"
+                  layout="prev, pager, next"
+                  @current-change="loadMyFollowing"
+                />
+              </div>
+            </div>
+          </el-tab-pane>
+
+          <!-- 我的粉丝 -->
+          <el-tab-pane label="我的粉丝" name="followers">
+            <el-skeleton :rows="4" animated v-if="followersLoading" />
+            <div v-else>
+              <div v-if="myFollowers.length === 0">
+                <el-empty description="还没有粉丝" />
+              </div>
+              <div v-else class="user-list">
+                <div v-for="user in myFollowers" :key="user.id" class="user-item">
+                  <el-avatar :src="user.avatar" :size="48" style="cursor:pointer;flex-shrink:0" @click="router.push(`/user/${user.id}`)">
+                    {{ user.username?.charAt(0)?.toUpperCase() }}
+                  </el-avatar>
+                  <div class="user-item-info" @click="router.push(`/user/${user.id}`)">
+                    <span class="user-item-name">{{ user.username }}</span>
+                    <span class="user-item-bio">{{ user.bio || '这个人很懒，什么都没写~' }}</span>
+                    <span class="user-item-stat">粉丝 {{ user.followersCount }}</span>
+                  </div>
+                  <el-button size="small" plain type="danger" @click="doRemoveFollower(user.id)">移除粉丝</el-button>
+                </div>
+              </div>
+              <div class="pagination-wrap">
+                <el-pagination
+                  v-model:current-page="followersPage"
+                  :page-size="20"
+                  :total="followersTotal"
+                  layout="prev, pager, next"
+                  @current-change="loadMyFollowers"
                 />
               </div>
             </div>
@@ -260,16 +391,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import NavBar from '@/components/NavBar.vue'
 import { userApi } from '@/api/user'
 import { contentApi } from '@/api/content'
+import { followApi } from '@/api/follow'
 import { uploadApi } from '@/api/upload'
 import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
+const route = useRoute()
 const userStore = useUserStore()
 const userInfo = ref<any>(null)
 const newAvatar = ref('')
@@ -281,6 +414,11 @@ const triggerAvatarFile = () => avatarFileInput.value?.click()
 const onAvatarFileChange = async (e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
+  if (file.size > 10 * 1024 * 1024) {
+    ElMessage.error('图片大小不能超过 10 MB，请压缩后重试')
+    if (avatarFileInput.value) avatarFileInput.value.value = ''
+    return
+  }
   avatarUploading.value = true
   try {
     const res = await uploadApi.image(file)
@@ -292,7 +430,7 @@ const onAvatarFileChange = async (e: Event) => {
     if (avatarFileInput.value) avatarFileInput.value.value = ''
   }
 }
-const activeTab = ref('content')
+const activeTab = ref((route.query.tab as string) || 'content')
 const myContent = ref<any[]>([])
 const contentPage = ref(1)
 const contentTotal = ref(0)
@@ -304,11 +442,35 @@ const draftsPage = ref(1)
 const draftsTotal = ref(0)
 const draftsLoading = ref(false)
 
+// 我的点赞
+const myLikes = ref<any[]>([])
+const likesPage = ref(1)
+const likesTotal = ref(0)
+const likesLoading = ref(false)
+
+// 我的关注
+const myFollowing = ref<any[]>([])
+const followingPage = ref(1)
+const followingTotal = ref(0)
+const followingLoading = ref(false)
+
+// 我的粉丝
+const myFollowers = ref<any[]>([])
+const followersPage = ref(1)
+const followersTotal = ref(0)
+const followersLoading = ref(false)
+
+// 统计数据（粉丝数、关注数、作品数）
+const profileStats = ref<any>(null)
+
 const formatDate = (d: string) => d ? new Date(d).toLocaleDateString('zh-CN') : ''
 
 const loadUserInfo = async () => {
   const res = await userApi.getInfo()
   userInfo.value = res.data
+  // 加载统计数据
+  const profileRes = await userApi.getProfile(userInfo.value.id)
+  profileStats.value = profileRes.data
 }
 
 const updateAvatar = async () => {
@@ -318,6 +480,22 @@ const updateAvatar = async () => {
   userInfo.value.avatar = newAvatar.value
   ElMessage.success('头像已更新')
   newAvatar.value = ''
+}
+
+// 个人简介
+const newBio = ref('')
+const updatingBio = ref(false)
+
+const doUpdateBio = async () => {
+  updatingBio.value = true
+  try {
+    await userApi.updateBio(newBio.value.trim())
+    userInfo.value.bio = newBio.value.trim()
+    ElMessage.success('简介已更新')
+    newBio.value = ''
+  } finally {
+    updatingBio.value = false
+  }
 }
 
 const loadMyContent = async () => {
@@ -343,7 +521,11 @@ const loadMyDrafts = async () => {
 }
 
 const deleteContent = async (id: number) => {
-  await ElMessageBox.confirm('确认删除该作品？删除后无法恢复。', '警告', { type: 'warning' })
+  await ElMessageBox.confirm(
+    '确认删除该作品？删除后无法恢复。\n提示：若只是不想公开展示，可将作品改为「私密」状态。',
+    '警告',
+    { type: 'warning', confirmButtonText: '仍要删除', cancelButtonText: '取消' }
+  )
   await contentApi.delete(id)
   ElMessage.success('作品已删除')
   loadMyContent()
@@ -360,7 +542,76 @@ const onTabChange = (name: string) => {
   if (name === 'drafts' && myDrafts.value.length === 0) {
     loadMyDrafts()
   }
+  if (name === 'likes' && myLikes.value.length === 0) {
+    loadMyLikes()
+  }
+  if (name === 'following' && myFollowing.value.length === 0) {
+    loadMyFollowing()
+  }
+  if (name === 'followers' && myFollowers.value.length === 0) {
+    loadMyFollowers()
+  }
 }
+
+const loadMyLikes = async () => {
+  likesLoading.value = true
+  try {
+    const res = await contentApi.myLikes(likesPage.value, 20)
+    myLikes.value = res.data.list
+    likesTotal.value = res.data.total
+  } finally {
+    likesLoading.value = false
+  }
+}
+
+const loadMyFollowing = async () => {
+  followingLoading.value = true
+  try {
+    const res = await followApi.getFollowing(userInfo.value?.id, followingPage.value, 20)
+    myFollowing.value = res.data.list
+    followingTotal.value = res.data.total
+  } finally {
+    followingLoading.value = false
+  }
+}
+
+const loadMyFollowers = async () => {
+  followersLoading.value = true
+  try {
+    const res = await followApi.getFollowers(userInfo.value?.id, followersPage.value, 20)
+    myFollowers.value = res.data.list
+    followersTotal.value = res.data.total
+  } finally {
+    followersLoading.value = false
+  }
+}
+
+const doUnfollow = async (userId: number) => {
+  await followApi.unfollow(userId)
+  ElMessage.success('已取消关注')
+  myFollowing.value = myFollowing.value.filter(u => u.id !== userId)
+  followingTotal.value--
+}
+
+const cancelLike = async (contentId: number) => {
+  await contentApi.like(contentId)
+  ElMessage.success('已取消点赞')
+  myLikes.value = myLikes.value.filter(item => item.id !== contentId)
+  likesTotal.value--
+}
+
+const doRemoveFollower = async (userId: number) => {
+  await followApi.removeFollower(userId)
+  ElMessage.success('已移除粉丝')
+  myFollowers.value = myFollowers.value.filter(u => u.id !== userId)
+  followersTotal.value--
+}
+
+// tab 切换时：同步 URL query（供浏览器历史记录保存），并触发懒加载
+watch(activeTab, (name) => {
+  router.replace({ query: { ...route.query, tab: name } })
+  onTabChange(name)
+})
 
 // 邮箱绑定/更换
 const emailDialogVisible = ref(false)
@@ -537,14 +788,18 @@ const confirmDelete = async () => {
   }
 }
 
-onMounted(() => {
-  loadUserInfo()
+onMounted(async () => {
+  await loadUserInfo()
   loadMyContent()
+  // 若初始 tab 不是默认的 'content'（说明从历史记录恢复过来），立即加载对应数据
+  if (activeTab.value !== 'content') {
+    onTabChange(activeTab.value)
+  }
 })
 </script>
 
 <style scoped>
-.user-center-page { min-height: calc(100vh + 1px); background: #f5f7fa; }
+.user-center-page { min-height: calc(100vh + 1px); background: #f0f2f5; }
 .user-center-layout {
   max-width: 1100px;
   margin: 24px auto;
@@ -555,54 +810,76 @@ onMounted(() => {
 }
 .user-profile-card {
   background: #fff;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 24px;
   height: fit-content;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 .avatar-section { text-align: center; margin-bottom: 20px; }
 .big-avatar { margin-bottom: 12px; }
-.username { font-size: 18px; font-weight: 600; margin: 8px 0; }
-.join-date { font-size: 12px; color: #aaa; margin-top: 8px; }
-.edit-avatar { padding-top: 16px; border-top: 1px solid #f0f0f0; }
+.username { font-size: 18px; font-weight: 700; margin: 8px 0; color: #1a1a1a; }
+.join-date { font-size: 12px; color: #bbb; margin-top: 6px; }
+.profile-stats { display: flex; justify-content: center; gap: 16px; margin-top: 12px; }
+.stat-chip {
+  font-size: 13px; color: #666; cursor: pointer;
+  padding: 4px 8px; border-radius: 6px; transition: background 0.2s;
+}
+.stat-chip:hover { background: #f0f2f5; color: #409eff; }
+.stat-chip strong { font-size: 16px; font-weight: 700; color: #222; margin-right: 3px; }
+.edit-avatar { padding-top: 16px; border-top: 1px solid #f5f5f5; }
 .upload-btn-wrap { margin-bottom: 4px; }
-.edit-email { padding-top: 16px; border-top: 1px solid #f0f0f0; margin-top: 16px; }
+.edit-email { padding-top: 16px; border-top: 1px solid #f5f5f5; margin-top: 16px; }
 .email-display { font-size: 13px; min-height: 20px; }
 .email-value { color: #333; word-break: break-all; }
 .email-empty { color: #bbb; font-style: italic; }
-.edit-section { padding-top: 16px; border-top: 1px solid #f0f0f0; margin-top: 16px; }
-.section-label { font-size: 13px; color: #999; margin: 0 0 6px; }
-.delete-account-section { padding-top: 16px; border-top: 1px solid #f0f0f0; margin-top: 16px; }
-.user-content { background: #fff; border-radius: 8px; padding: 24px; }
-.pagination-wrap { display: flex; justify-content: center; margin-top: 20px; }
+.edit-section { padding-top: 16px; border-top: 1px solid #f5f5f5; margin-top: 16px; }
+.section-label { font-size: 12px; color: #aaa; margin: 0 0 6px; font-weight: 500; letter-spacing: 0.3px; }
+.delete-account-section { padding-top: 16px; border-top: 1px solid #f5f5f5; margin-top: 16px; }
+.user-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+.pagination-wrap { display: flex; justify-content: center; margin-top: 20px; padding-bottom: 8px; }
 
 /* 作品/草稿通用列表 */
-.work-list { display: flex; flex-direction: column; gap: 12px; }
+.work-list { display: flex; flex-direction: column; gap: 10px; }
 .work-item {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 14px 16px;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  transition: box-shadow 0.2s;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+  background: #fafafa;
 }
-.work-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.work-item:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  border-color: rgba(64, 158, 255, 0.2);
+  transform: translateX(2px);
+  background: #fff;
+}
 
 /* 封面缩略图 */
 .work-cover {
   width: 44px;
   height: 58px;
-  border-radius: 4px;
+  border-radius: 6px;
   overflow: hidden;
   flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 .work-cover img { width: 100%; height: 100%; object-fit: cover; }
 
-.work-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.work-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
 .work-title {
   font-size: 15px;
-  font-weight: 500;
-  color: #333;
+  font-weight: 600;
+  color: #222;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -611,7 +888,29 @@ onMounted(() => {
 }
 .work-title:hover { color: #409eff; }
 .work-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.work-time { font-size: 12px; color: #aaa; }
-.work-stat { font-size: 12px; color: #bbb; }
+.work-time { font-size: 12px; color: #bbb; }
+.work-stat { font-size: 12px; color: #ccc; }
 .work-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+/* 关注用户列表 */
+.user-list { display: flex; flex-direction: column; gap: 10px; }
+.user-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: 10px;
+  background: #fafafa;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.user-item:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  border-color: rgba(64,158,255,0.2);
+  background: #fff;
+}
+.user-item-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; cursor: pointer; }
+.user-item-name { font-size: 15px; font-weight: 600; color: #222; }
+.user-item-bio { font-size: 13px; color: #999; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-item-stat { font-size: 12px; color: #bbb; }
 </style>

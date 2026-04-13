@@ -1,8 +1,7 @@
 package com.inkforge.controller;
 
-import com.inkforge.common.PageResult;
 import com.inkforge.common.Result;
-import com.inkforge.dto.response.ContentVO;
+import com.inkforge.dto.response.FavoritePageResult;
 import com.inkforge.service.FavoriteService;
 import com.inkforge.util.SecurityUtil;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +31,7 @@ public class FavoriteController {
     }
 
     @GetMapping("/list")
-    public Result<PageResult<ContentVO>> list(
+    public Result<FavoritePageResult> list(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size) {
         Long userId = SecurityUtil.getCurrentUserId();

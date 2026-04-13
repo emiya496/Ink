@@ -22,22 +22,28 @@ public class ChapterService {
         this.contentMapper = contentMapper;
     }
 
-    public void addChapter(Long contentId, String title, String chapterContent, Long userId) {
+    public void addChapter(Long contentId, String title, String chapterContent, Long userId, Integer chapterOrder) {
         Content content = contentMapper.selectById(contentId);
         if (content == null) throw new BusinessException(404, "内容不存在");
         if (!content.getUserId().equals(userId)) throw new BusinessException(403, "无权操作");
         if (!"小说".equals(content.getType())) throw new BusinessException("只有小说类型支持章节");
 
-        // 获取当前最大序号
-        int maxOrder = chapterMapper.selectList(
-                new LambdaQueryWrapper<Chapter>().eq(Chapter::getContentId, contentId)
-                        .orderByDesc(Chapter::getChapterOrder)).stream()
-                .mapToInt(Chapter::getChapterOrder).max().orElse(0);
+        int order;
+        if (chapterOrder != null) {
+            // 补写缺章：使用前端指定的序号
+            order = chapterOrder;
+        } else {
+            // 新增下一章：自动取最大序号+1
+            order = chapterMapper.selectList(
+                    new LambdaQueryWrapper<Chapter>().eq(Chapter::getContentId, contentId)
+                            .orderByDesc(Chapter::getChapterOrder)).stream()
+                    .mapToInt(Chapter::getChapterOrder).max().orElse(0) + 1;
+        }
 
         Chapter chapter = new Chapter();
         chapter.setContentId(contentId);
         chapter.setChapterTitle(title);
-        chapter.setChapterOrder(maxOrder + 1);
+        chapter.setChapterOrder(order);
         chapter.setChapterContent(chapterContent);
         chapterMapper.insert(chapter);
     }

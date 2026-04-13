@@ -58,10 +58,11 @@ public class AdminService {
     }
 
     // ========== 内容管理 ==========
-    public PageResult<Content> listContents(Integer page, Integer size, String type, String status) {
+    public PageResult<Content> listContents(Integer page, Integer size, String type, String status, String keyword) {
         LambdaQueryWrapper<Content> wrapper = new LambdaQueryWrapper<>();
         if (type != null && !type.isEmpty()) wrapper.eq(Content::getType, type);
         if (status != null && !status.isEmpty()) wrapper.eq(Content::getStatus, status);
+        if (keyword != null && !keyword.isEmpty()) wrapper.like(Content::getTitle, keyword);
         wrapper.orderByDesc(Content::getCreateTime);
         IPage<Content> pageResult = contentMapper.selectPage(new Page<>(page, size), wrapper);
         return PageResult.of(pageResult.getTotal(), pageResult.getRecords(), page, size);
@@ -80,10 +81,10 @@ public class AdminService {
     }
 
     // ========== 标签管理 ==========
-    public PageResult<Tag> listTags(Integer page, Integer size) {
-        IPage<Tag> pageResult = tagMapper.selectPage(
-                new Page<>(page, size),
-                new LambdaQueryWrapper<Tag>().orderByDesc(Tag::getCreateTime));
+    public PageResult<Tag> listTags(Integer page, Integer size, String keyword) {
+        LambdaQueryWrapper<Tag> wrapper = new LambdaQueryWrapper<Tag>().orderByDesc(Tag::getCreateTime);
+        if (keyword != null && !keyword.isEmpty()) wrapper.like(Tag::getTagName, keyword);
+        IPage<Tag> pageResult = tagMapper.selectPage(new Page<>(page, size), wrapper);
         return PageResult.of(pageResult.getTotal(), pageResult.getRecords(), page, size);
     }
 
@@ -111,10 +112,10 @@ public class AdminService {
     }
 
     // ========== 评论管理 ==========
-    public PageResult<Comment> listComments(Integer page, Integer size) {
-        IPage<Comment> pageResult = commentMapper.selectPage(
-                new Page<>(page, size),
-                new LambdaQueryWrapper<Comment>().orderByDesc(Comment::getCreateTime));
+    public PageResult<Comment> listComments(Integer page, Integer size, String keyword) {
+        LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<Comment>().orderByDesc(Comment::getCreateTime);
+        if (keyword != null && !keyword.isEmpty()) wrapper.like(Comment::getContent, keyword);
+        IPage<Comment> pageResult = commentMapper.selectPage(new Page<>(page, size), wrapper);
         return PageResult.of(pageResult.getTotal(), pageResult.getRecords(), page, size);
     }
 

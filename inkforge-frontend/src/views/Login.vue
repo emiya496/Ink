@@ -240,24 +240,41 @@ const confirmReset = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+}
+.login-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.28);
 }
 .login-box {
-  background: #fff;
-  border-radius: 16px;
-  padding: 40px;
-  width: 400px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  position: relative;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(32px) saturate(160%);
+  -webkit-backdrop-filter: blur(32px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  padding: 44px 40px 36px;
+  width: 420px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255,255,255,0.15);
+  animation: loginSlideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes loginSlideUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    }
 }
 .login-header {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 .brand-logo-img {
   width: 180px;
   height: auto;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.12));
 }
-.brand-desc { color: #999; font-size: 14px; }
+.brand-desc { color: #666; font-size: 14px; letter-spacing: 0.5px; }
 .login-tabs { margin-bottom: 8px; }
 .forgot-link {
   text-align: right;
@@ -266,20 +283,23 @@ const confirmReset = async () => {
   cursor: pointer;
   margin-bottom: 12px;
   margin-top: -4px;
+  transition: opacity 0.2s;
 }
-.forgot-link:hover { text-decoration: underline; }
+.forgot-link:hover { opacity: 0.75; }
 .email-tip {
   font-size: 12px;
-  color: #f0a020;
+  color: #e6900a;
   margin: -8px 0 12px;
   line-height: 1.4;
 }
 .back-home {
   text-align: center;
   margin-top: 20px;
-  color: #999;
+  color: #888;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  transition: color 0.2s;
 }
 .back-home:hover { color: #409eff; }
 </style>

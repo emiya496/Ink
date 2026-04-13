@@ -24,8 +24,10 @@ public class ChapterController {
         Long contentId = Long.valueOf(body.get("contentId").toString());
         String title = (String) body.get("chapterTitle");
         String content = (String) body.get("chapterContent");
+        Integer chapterOrder = body.get("chapterOrder") != null
+                ? Integer.valueOf(body.get("chapterOrder").toString()) : null;
         Long userId = SecurityUtil.getCurrentUserId();
-        chapterService.addChapter(contentId, title, content, userId);
+        chapterService.addChapter(contentId, title, content, userId, chapterOrder);
         return Result.success();
     }
 

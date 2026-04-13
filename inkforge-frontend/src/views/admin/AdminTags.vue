@@ -1,7 +1,16 @@
 <template>
   <div class="admin-page">
     <div class="page-toolbar">
-      <el-input v-model="newTagName" placeholder="新增系统标签名" style="width:240px" />
+      <el-input
+        v-model="keyword"
+        placeholder="搜索标签名..."
+        prefix-icon="Search"
+        clearable
+        class="search-input"
+        @keyup.enter="doSearch"
+        @clear="doSearch"
+      />
+      <el-input v-model="newTagName" placeholder="新增系统标签名" style="width:200px" @keyup.enter="createTag" />
       <el-button type="primary" @click="createTag">新增系统标签</el-button>
     </div>
 
@@ -46,17 +55,20 @@ const total = ref(0)
 const page = ref(1)
 const loading = ref(false)
 const newTagName = ref('')
+const keyword = ref('')
 
 const formatDate = (d: string) => d ? new Date(d).toLocaleString('zh-CN') : ''
 
 const loadList = async () => {
   loading.value = true
   try {
-    const res = await adminApi.listTags({ page: page.value, size: 20 })
+    const res = await adminApi.listTags({ page: page.value, size: 20, keyword: keyword.value || undefined })
     list.value = res.data.list
     total.value = res.data.total
   } finally { loading.value = false }
 }
+
+const doSearch = () => { page.value = 1; loadList() }
 
 const createTag = async () => {
   if (!newTagName.value.trim()) { ElMessage.warning('请输入标签名'); return }
@@ -85,6 +97,19 @@ onMounted(loadList)
 
 <style scoped>
 .admin-page { background: #fff; border-radius: 8px; padding: 20px; }
-.page-toolbar { display: flex; gap: 12px; margin-bottom: 16px; }
+.page-toolbar { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; }
+.search-input { width: 200px; }
+:deep(.search-input .el-input__wrapper) {
+  border-radius: 20px;
+  background: #f5f7fa;
+  box-shadow: none !important;
+  border: 1px solid transparent;
+  transition: border-color 0.2s, background 0.2s;
+}
+:deep(.search-input .el-input__wrapper:hover),
+:deep(.search-input .el-input__wrapper.is-focus) {
+  background: #fff;
+  border-color: #409eff;
+}
 .pagination-wrap { display: flex; justify-content: center; margin-top: 20px; }
 </style>

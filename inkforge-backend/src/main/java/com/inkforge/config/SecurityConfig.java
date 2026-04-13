@@ -59,7 +59,11 @@ public class SecurityConfig {
                     "/api/content/list", "/api/content/{id}",
                     "/api/content/rank", "/api/content/hot-banner",
                     "/api/tag/list", "/api/tag/hot",
-                    "/api/comment/**"
+                    "/api/comment/**",
+                    "/api/chapter/**",
+                    "/api/user/search", "/api/user/{id}/profile",
+                    "/api/content/user/{userId}",
+                    "/api/follow/{userId}/followers", "/api/follow/{userId}/following"
                 ).permitAll()
                 // 管理员接口
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")

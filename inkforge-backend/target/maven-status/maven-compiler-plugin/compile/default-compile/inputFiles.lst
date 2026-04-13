@@ -23,6 +23,7 @@ E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\service\UserService
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\config\DataInitializer.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\config\CorsConfig.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\entity\ContentTag.java
+E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\controller\FollowController.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\mapper\AiLogMapper.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\controller\ContentController.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\service\CommentService.java
@@ -32,16 +33,20 @@ E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\controller\AdminCon
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\mapper\EmailCodeMapper.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\service\AdminService.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\dto\response\CommentVO.java
+E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\mapper\UserFollowMapper.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\dto\response\TagVO.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\service\ai\impl\DeepSeekProvider.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\common\exception\GlobalExceptionHandler.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\dto\response\ContentVO.java
+E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\service\FollowService.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\controller\UserController.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\entity\EmailCode.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\config\MybatisPlusConfig.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\service\ChapterService.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\config\JwtAuthFilter.java
+E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\dto\response\FavoritePageResult.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\service\ai\AIService.java
+E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\dto\response\UserProfileVO.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\util\SecurityUtil.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\config\WebMvcConfig.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\mapper\TagMapper.java
@@ -49,6 +54,7 @@ E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\mapper\UserMapper.j
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\service\ai\AIProviderFactory.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\mapper\CommentMapper.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\entity\Favorite.java
+E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\entity\UserFollow.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\service\ai\impl\OpenAIProvider.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\dto\request\AiRequest.java
 E:\毕设\InkForge\inkforge-backend\src\main\java\com\inkforge\dto\request\ContentCreateRequest.java

@@ -39,6 +39,10 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/Bookshelf.vue'),
     meta: { requireAuth: true }
   },
+  {
+    path: '/user/:id',
+    component: () => import('@/views/UserProfile.vue')
+  },
   // 管理后台
   {
     path: '/admin',
@@ -62,7 +66,10 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
-  scrollBehavior: () => ({ top: 0 })
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) return savedPosition
+    return { top: 0 }
+  }
 })
 
 // 路由守卫

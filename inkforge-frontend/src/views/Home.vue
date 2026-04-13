@@ -98,7 +98,7 @@
               class="rank-item"
               @click="router.push(`/detail/${item.id}`)"
             >
-              <span :class="['rank-num', idx < 3 ? 'top3' : '']">{{ idx + 1 }}</span>
+              <span :class="['rank-num', idx === 0 ? 'top1' : idx === 1 ? 'top2' : idx === 2 ? 'top3' : '']">{{ idx + 1 }}</span>
               <div class="rank-info">
                 <span class="rank-title">{{ item.title }}</span>
                 <span class="rank-stat">
@@ -125,6 +125,8 @@ import NavBar from '@/components/NavBar.vue'
 import ContentCard from '@/components/ContentCard.vue'
 import { contentApi } from '@/api/content'
 import { tagApi } from '@/api/tag'
+
+defineOptions({ name: 'Home' })
 
 const router = useRouter()
 
@@ -227,12 +229,13 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.home-page { min-height: calc(100vh + 1px); background: #f5f7fa; }
+.home-page { min-height: calc(100vh + 1px); background: #f0f2f5; }
 
 /* 分类导航 */
 .category-nav {
-  background: #fff;
-  border-bottom: 1px solid #eee;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   position: sticky;
   top: 60px;
   z-index: 10;
@@ -240,16 +243,16 @@ onMounted(() => {
 .category-inner {
   max-width: 1300px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 20px 0 68px;
   display: flex;
 }
 .cat-item {
   padding: 12px 20px;
   cursor: pointer;
   font-size: 15px;
-  color: #555;
+  color: #666;
   border-bottom: 2px solid transparent;
-  transition: all 0.2s;
+  transition: color 0.2s, border-color 0.2s;
   white-space: nowrap;
 }
 .cat-item:hover { color: #409eff; }
@@ -268,22 +271,26 @@ onMounted(() => {
 
 /* 热门横幅 */
 .hero-banner {
-  height: 220px;
-  border-radius: 10px;
+  height: 240px;
+  border-radius: 14px;
   background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
   background-size: cover;
   background-position: center;
   cursor: pointer;
   overflow: hidden;
   margin-bottom: 16px;
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.3s, transform 0.3s;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
-.hero-banner:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+.hero-banner:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+  transform: translateY(-2px);
+}
 .banner-overlay {
   width: 100%;
   height: 100%;
   padding: 24px 28px;
-  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 100%);
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.15) 100%);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -299,13 +306,14 @@ onMounted(() => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 .banner-meta {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255,255,255,0.75);
 }
 .banner-meta .el-icon { font-size: 13px; }
 
@@ -316,28 +324,32 @@ onMounted(() => {
   align-items: center;
   background: #fff;
   padding: 10px 16px;
-  border-radius: 8px;
+  border-radius: 10px;
   margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
-.sort-left { display: flex; gap: 16px; }
+.sort-left { display: flex; gap: 8px; }
 .sort-btn {
   cursor: pointer;
   font-size: 14px;
   color: #666;
-  padding: 4px 10px;
-  border-radius: 4px;
-  transition: all 0.15s;
+  padding: 5px 12px;
+  border-radius: 20px;
+  transition: all 0.2s;
+  font-weight: 500;
 }
-.sort-btn.active { color: #409eff; background: #ecf5ff; }
+.sort-btn:hover { color: #409eff; background: #f0f7ff; }
+.sort-btn.active { color: #409eff; background: #e8f3ff; font-weight: 600; }
 .more-btn {
   font-size: 13px;
   color: #409eff;
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: background 0.15s;
+  padding: 5px 10px;
+  border-radius: 20px;
+  transition: background 0.2s;
 }
-.more-btn:hover { background: #ecf5ff; }
+.more-btn:hover { background: #f0f7ff; }
 
 /* 5列内容网格 */
 .content-wrap { transition: opacity 0.2s; }
@@ -352,17 +364,30 @@ onMounted(() => {
 .sidebar { position: sticky; top: 100px; }
 .sidebar-card {
   background: #fff;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 16px;
   margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 .sidebar-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  margin: 0 0 12px;
-  padding-bottom: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 14px;
+  padding-bottom: 10px;
   border-bottom: 2px solid #409eff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sidebar-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 16px;
+  background: #409eff;
+  border-radius: 2px;
 }
 
 /* 热门标签 */
@@ -379,27 +404,31 @@ onMounted(() => {
   align-items: center;
   overflow: hidden;
   box-sizing: border-box;
+  transition: transform 0.15s;
 }
+.cloud-tag:hover { transform: scale(1.04); }
 .tag-count { font-size: 11px; color: #999; margin-left: 4px; flex-shrink: 0; }
 
 /* 排行榜 */
 .rank-tabs { margin-bottom: 8px; }
-.rank-list { display: flex; flex-direction: column; gap: 8px; }
+.rank-list { display: flex; flex-direction: column; gap: 6px; }
 .rank-item {
   display: flex;
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  padding: 5px 0;
-  border-bottom: 1px solid #f5f5f5;
+  padding: 6px 4px;
+  border-radius: 8px;
+  transition: background 0.15s;
 }
+.rank-item:hover { background: #f5f7fa; }
 .rank-item:hover .rank-title { color: #409eff; }
 .rank-num {
   width: 22px;
   height: 22px;
-  border-radius: 4px;
-  background: #ddd;
-  color: #666;
+  border-radius: 6px;
+  background: #eee;
+  color: #888;
   font-size: 12px;
   font-weight: 700;
   display: flex;
@@ -407,7 +436,9 @@ onMounted(() => {
   justify-content: center;
   flex-shrink: 0;
 }
-.rank-num.top3 { background: #409eff; color: #fff; }
+.rank-num.top1 { background: linear-gradient(135deg, #f7b733, #fc4a1a); color: #fff; }
+.rank-num.top2 { background: linear-gradient(135deg, #bdc3c7, #95a5a6); color: #fff; }
+.rank-num.top3 { background: linear-gradient(135deg, #d4a84b, #a0764a); color: #fff; }
 .rank-info {
   flex: 1;
   min-width: 0;
@@ -422,6 +453,7 @@ onMounted(() => {
   text-overflow: ellipsis;
   white-space: nowrap;
   transition: color 0.2s;
+  font-weight: 500;
 }
-.rank-stat { font-size: 11px; color: #aaa; }
+.rank-stat { font-size: 11px; color: #bbb; }
 </style>

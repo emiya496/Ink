@@ -14,6 +14,7 @@ public class ContentVO {
     private String content;
     private String type;
     private String status;
+    private String visibility;
     private Integer viewCount;
     private Integer likeCount;
     private Integer favoriteCount; // 收藏总数（排行用）

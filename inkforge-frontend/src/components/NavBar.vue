@@ -1,5 +1,14 @@
 <template>
   <el-header class="navbar">
+    <!-- 返回按钮：绝对定位在导航栏左侧，不影响内部 flex 布局 -->
+    <el-button
+      v-if="route.path !== '/'"
+      class="back-btn"
+      :icon="ArrowLeft"
+      circle
+      @click="router.back()"
+    />
+
     <div class="navbar-inner">
       <!-- Logo 最左 -->
       <div class="navbar-brand" @click="router.push('/')">
@@ -55,9 +64,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { ArrowLeft } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { isDark, toggleTheme } from '@/composables/useTheme'
 
@@ -65,6 +75,11 @@ const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
 const searchKeyword = ref('')
+
+// 在分类页时，搜索框与 URL keyword 参数保持同步
+watch(() => route.query.keyword, (val) => {
+  searchKeyword.value = (val as string) || ''
+}, { immediate: true })
 
 // 根据当前路径计算激活菜单项
 const activeMenu = computed(() => {
@@ -99,13 +114,17 @@ const handleCommand = async (cmd: string) => {
 
 <style scoped>
 .navbar {
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
   position: sticky;
   top: 0;
   z-index: 100;
   height: 60px;
   padding: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+  transition: background 0.3s, box-shadow 0.3s;
 }
 .navbar-inner {
   max-width: 1300px;
@@ -116,13 +135,29 @@ const handleCommand = async (cmd: string) => {
   padding: 0 20px;
   gap: 0;
 }
+.back-btn {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none !important;
+  background: #f5f7fa !important;
+  color: #555 !important;
+  transition: background 0.2s, color 0.2s !important;
+}
+.back-btn:hover {
+  background: #e9ecf0 !important;
+  color: #409eff !important;
+}
 .navbar-brand {
   display: flex;
   align-items: center;
   cursor: pointer;
   flex-shrink: 0;
   margin-right: 8px;
+  transition: opacity 0.2s;
 }
+.navbar-brand:hover { opacity: 0.8; }
 .brand-logo-img {
   height: 40px;
   width: auto;
@@ -131,11 +166,36 @@ const handleCommand = async (cmd: string) => {
 .navbar-menu {
   border-bottom: none !important;
   flex-shrink: 0;
+  background: transparent !important;
+}
+:deep(.navbar-menu .el-menu-item) {
+  font-size: 15px;
+  color: #555 !important;
+  border-bottom: 2px solid transparent !important;
+  transition: color 0.2s, border-color 0.2s !important;
+}
+:deep(.navbar-menu .el-menu-item:hover),
+:deep(.navbar-menu .el-menu-item.is-active) {
+  color: #409eff !important;
+  background: transparent !important;
+  border-bottom-color: #409eff !important;
 }
 .search-input {
   flex: 1;
   min-width: 120px;
   margin: 0 16px;
+}
+:deep(.search-input .el-input__wrapper) {
+  border-radius: 20px;
+  background: #f5f7fa;
+  box-shadow: none !important;
+  border: 1px solid transparent;
+  transition: border-color 0.2s, background 0.2s;
+}
+:deep(.search-input .el-input__wrapper:hover),
+:deep(.search-input .el-input__wrapper.is-focus) {
+  background: #fff;
+  border-color: #409eff;
 }
 .navbar-right {
   width: 320px;
@@ -150,8 +210,48 @@ const handleCommand = async (cmd: string) => {
   align-items: center;
   gap: 8px;
   cursor: pointer;
+  padding: 4px 10px 4px 4px;
+  border-radius: 20px;
+  transition: background 0.2s;
 }
-.username { font-size: 14px; color: #333; }
+.user-avatar:hover { background: #f5f7fa; }
+.username { font-size: 14px; color: #333; font-weight: 500; }
 .admin-entry { color: #e6a23c !important; font-weight: bold; }
-.theme-btn { border: none; background: transparent; }
+.theme-btn {
+  border: none !important;
+  background: #f5f7fa !important;
+  color: #555 !important;
+  transition: background 0.2s, color 0.2s !important;
+}
+.theme-btn:hover {
+  background: #e9ecf0 !important;
+  color: #409eff !important;
+}
+</style>
+
+<style>
+/* 导航栏暗黑模式 */
+html.dark .navbar-menu .el-menu-item {
+  color: #cfd3dc !important;
+  background: transparent !important;
+}
+html.dark .navbar-menu .el-menu-item:hover,
+html.dark .navbar-menu .el-menu-item.is-active {
+  color: #66b1ff !important;
+  background: transparent !important;
+}
+html.dark .navbar-menu,
+html.dark .el-menu--horizontal { background: transparent !important; }
+html.dark .back-btn { background: #252535 !important; color: #aaa !important; }
+html.dark .back-btn:hover { background: #333350 !important; color: #66b1ff !important; }
+html.dark .theme-btn { background: #252535 !important; color: #aaa !important; }
+html.dark .theme-btn:hover { background: #333350 !important; color: #66b1ff !important; }
+html.dark .user-avatar:hover { background: #252535 !important; }
+html.dark .user-avatar .username { color: #cfd3dc !important; }
+html.dark .search-input .el-input__wrapper { background: #252535 !important; }
+html.dark .search-input .el-input__wrapper:hover,
+html.dark .search-input .el-input__wrapper.is-focus {
+  background: #2a2a40 !important;
+  border-color: #409eff !important;
+}
 </style>

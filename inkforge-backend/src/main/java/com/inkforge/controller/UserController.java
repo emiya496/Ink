@@ -1,9 +1,11 @@
 package com.inkforge.controller;
 
+import com.inkforge.common.PageResult;
 import com.inkforge.common.Result;
 import com.inkforge.dto.request.LoginRequest;
 import com.inkforge.dto.request.RegisterRequest;
 import com.inkforge.dto.response.LoginResponse;
+import com.inkforge.dto.response.UserProfileVO;
 import com.inkforge.entity.User;
 import com.inkforge.service.UserService;
 import com.inkforge.util.SecurityUtil;
@@ -46,6 +48,27 @@ public class UserController {
         return Result.success();
     }
 
+    @GetMapping("/{id}/profile")
+    public Result<UserProfileVO> getProfile(@PathVariable Long id) {
+        Long viewerId = SecurityUtil.getCurrentUserId();
+        return Result.success(userService.getUserProfile(id, viewerId));
+    }
+
+    @GetMapping("/search")
+    public Result<PageResult<UserProfileVO>> searchUsers(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return Result.success(userService.searchUsers(keyword, page, size));
+    }
+
+    @PutMapping("/bio")
+    public Result<Void> updateBio(@RequestBody Map<String, String> body) {
+        Long userId = SecurityUtil.getCurrentUserId();
+        userService.updateBio(userId, body.get("bio"));
+        return Result.success();
+    }
+
     @PostMapping("/email/send-code")
     public Result<Void> sendEmailCode(@RequestBody Map<String, String> body) {
         Long userId = SecurityUtil.getCurrentUserId();
@@ -67,7 +90,6 @@ public class UserController {
         return Result.success();
     }
 
-    // 找回密码（无需登录）
     @PostMapping("/password/send-code")
     public Result<Void> sendPasswordResetCode(@RequestBody Map<String, String> body) {
         userService.sendPasswordResetCode(body.get("email"));

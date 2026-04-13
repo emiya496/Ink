@@ -88,6 +88,23 @@ public class ContentController {
         return Result.success(contentService.getMyDrafts(userId, page, size));
     }
 
+    @GetMapping("/my/likes")
+    public Result<PageResult<ContentVO>> myLikes(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "20") Integer size) {
+        Long userId = SecurityUtil.getCurrentUserId();
+        return Result.success(contentService.getMyLikes(userId, page, size));
+    }
+
+    @GetMapping("/user/{userId}")
+    public Result<PageResult<ContentVO>> userWorks(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "20") Integer size) {
+        Long viewerId = SecurityUtil.getCurrentUserId();
+        return Result.success(contentService.getUserWorks(userId, viewerId, page, size));
+    }
+
     @PostMapping("/{id}/like")
     public Result<Boolean> like(@PathVariable Long id) {
         Long userId = SecurityUtil.getCurrentUserId();

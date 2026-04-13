@@ -20,6 +20,7 @@ public class Content {
     private Integer viewCount;
     private Integer likeCount;
     private String coverImage;
+    private String visibility; // "public" | "private" | "followers_only"
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }
